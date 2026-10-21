@@ -1,0 +1,28 @@
+---
+import ThemeToggle from "./ThemeToggle.astro";
+import UIToggle from "./UIToggle.astro";
+import AstroLogo from "./icons/AstroLogo.astro";
+import StrapiLogo from "./icons/StrapiLogo.astro";
+---
+
+<header class="sticky top-0 z-50 glass border-b-0">
+  <div class="mx-auto flex max-w-screen-2xl items-center justify-between px-4 sm:px-6 lg:px-10 h-14">
+    <div class="flex items-center gap-3">
+      <a href="https://sensinum.com" target="_blank" rel="noopener noreferrer" class="flex items-center hover:opacity-80 transition-opacity" aria-label="Sensinum">
+        <img src="https://www.sensinum.com/img/starter/sensinum-color-symbol.svg" alt="Sensinum" class="h-6 w-auto block sm:hidden" />
+        <img src="https://www.sensinum.com/img/starter/sensinum-color.svg" alt="Sensinum" class="h-5 w-auto hidden sm:block" />
+      </a>
+      <div class="h-5 w-px bg-foreground/10" />
+      <a href="/" class="flex items-center gap-2 hover:opacity-80 transition-opacity" aria-label="Astro × Strapi Starter">
+        <AstroLogo class="h-5 w-auto text-foreground" />
+        <svg class="size-3 text-muted-foreground" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        <StrapiLogo class="h-5 w-auto" />
+      </a>
+    </div>
+    <div class="flex items-center gap-4">
+      <UIToggle showIcons hideTextOnMobile />
+      <div class="h-5 w-px bg-foreground/10" />
+      <ThemeToggle />
+    </div>
+  </div>
+</header>
