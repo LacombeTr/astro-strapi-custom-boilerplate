@@ -1,0 +1,14 @@
+{
+  "collectionName": "components_shared_ctas",
+  "info": {
+    "displayName": "CTA",
+    "description": "Bouton d'appel à l'action",
+    "icon": "cursor"
+  },
+  "options": {},
+  "attributes": {
+    "label": { "type": "string", "required": true },
+    "url": { "type": "string", "required": true },
+    "color": { "type": "string" }
+  }
+}

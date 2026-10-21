@@ -1,0 +1,33 @@
+{
+  "kind": "singleType",
+  "collectionName": "homepages",
+  "info": {
+    "singularName": "homepage",
+    "pluralName": "homepages",
+    "displayName": "Accueil",
+    "description": "Page d'accueil du site"
+  },
+  "options": { "draftAndPublish": true },
+  "pluginOptions": {},
+  "attributes": {
+    "title": { "type": "string", "required": true },
+    "hero": {
+      "type": "component",
+      "repeatable": false,
+      "component": "blocks.hero"
+    },
+    "sections": {
+      "type": "dynamiczone",
+      "components": ["blocks.hero", "blocks.text", "blocks.quote", "blocks.media", "blocks.cta"]
+    },
+    "examples": {
+      "type": "dynamiczone",
+      "components": ["blocks.hero", "blocks.text", "blocks.quote", "blocks.media", "blocks.cta"]
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.seo"
+    }
+  }
+}

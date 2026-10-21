@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_blocks_ctas",
+  "info": {
+    "displayName": "Appel à l'action",
+    "description": "Section de conversion : titre, description et bouton",
+    "icon": "bell"
+  },
+  "options": {},
+  "attributes": {
+    "title": { "type": "string" },
+    "description": { "type": "text" },
+    "classes": { "type": "string" },
+    "cta": {
+      "type": "component",
+      "repeatable": false,
+      "component": "shared.cta",
+      "required": true
+    },
+    "shields": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.shield"
+    }
+  }
+}

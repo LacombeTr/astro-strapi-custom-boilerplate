@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_shared_nav_items",
+  "info": {
+    "displayName": "Lien de navigation",
+    "icon": "link"
+  },
+  "options": {},
+  "attributes": {
+    "label": { "type": "string", "required": true },
+    "url": { "type": "string", "required": true },
+    "openInNewTab": { "type": "boolean", "default": false }
+  }
+}

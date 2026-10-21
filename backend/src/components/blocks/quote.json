@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_blocks_quotes",
+  "info": {
+    "displayName": "Citation",
+    "description": "Témoignage ou citation attribuée",
+    "icon": "quote"
+  },
+  "options": {},
+  "attributes": {
+    "quote": { "type": "text", "required": true },
+    "author": { "type": "string" }
+  }
+}

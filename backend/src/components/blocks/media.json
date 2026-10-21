@@ -1,0 +1,18 @@
+{
+  "collectionName": "components_blocks_medias",
+  "info": {
+    "displayName": "Média",
+    "description": "Image avec légende optionnelle",
+    "icon": "picture"
+  },
+  "options": {},
+  "attributes": {
+    "media": {
+      "type": "media",
+      "multiple": false,
+      "required": true,
+      "allowedTypes": ["images", "videos"]
+    },
+    "caption": { "type": "string" }
+  }
+}

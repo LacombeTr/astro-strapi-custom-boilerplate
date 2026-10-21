@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_shared_shields",
+  "info": {
+    "displayName": "Shield",
+    "description": "Badge ou lien secondaire affiché sous un CTA",
+    "icon": "shield"
+  },
+  "options": {},
+  "attributes": {
+    "label": { "type": "string", "required": true },
+    "url": { "type": "string", "required": true }
+  }
+}

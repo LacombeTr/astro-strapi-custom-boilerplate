@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_shared_footers",
+  "info": {
+    "displayName": "Pied de page",
+    "icon": "layout"
+  },
+  "options": {},
+  "attributes": {
+    "copyright": { "type": "string" },
+    "links": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.nav-item"
+    },
+    "socials": {
+      "type": "component",
+      "repeatable": true,
+      "component": "shared.social"
+    }
+  }
+}

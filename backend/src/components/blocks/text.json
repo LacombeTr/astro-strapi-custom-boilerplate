@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_blocks_texts",
+  "info": {
+    "displayName": "Texte",
+    "description": "Bloc de texte riche",
+    "icon": "align-left"
+  },
+  "options": {},
+  "attributes": {
+    "title": { "type": "string" },
+    "content": { "type": "blocks", "required": true }
+  }
+}
