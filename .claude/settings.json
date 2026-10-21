@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(npm run typecheck)",
+      "Bash(npm run build)",
+      "Bash(npm run build:web)",
+      "Bash(npm run build:cms)",
+      "Bash(npm run setup -- --dry-run)",
+      "Bash(npm run skills:refresh)",
+      "Bash(npx astro check)",
+      "Bash(npx astro check:*)",
+      "Bash(npx astro build)",
+      "Bash(npm --prefix backend run build)",
+      "Bash(node scripts/copy-tarteaucitron.mjs)",
+      "Bash(node scripts/init-project.mjs --dry-run)",
+      "Bash(node --check:*)",
+      "Bash(git status)",
+      "Bash(git status:*)",
+      "Bash(git diff)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git branch)",
+      "Bash(git branch:*)",
+      "Bash(curl -s http://localhost:1337/*)",
+      "Bash(curl -s http://localhost:4321/*)"
+    ],
+    "ask": [
+      "Bash(npm run dev)",
+      "Bash(npm run dev:cms)",
+      "Bash(npm run dev:web)",
+      "Bash(npm run cms:seed)",
+      "Bash(npm run setup)",
+      "Bash(npm install:*)"
+    ],
+    "deny": [
+      "Read(./.env)",
+      "Read(./backend/.env)",
+      "Read(./backend/.tmp/**)"
+    ]
+  }
+}

@@ -1,37 +1,47 @@
 ---
 name: astro-strapi-starter
 description: >-
-  Develop and extend the Astro + Strapi starter: content.config with @sensinum/astro-strapi-loader,
-  Strapi 5 data in Astro pages, StrapiBlocks, BlockRenderer, Tailwind 4, shadcn. Covers onboarding
-  (copy upstream skills), slug/CMS routes, Astro i18n, package upgrades, optional Vitest. Types in
-  src/types/strapi/ with a barrel index.
+  Develop and extend this Astro + Strapi vitrine boilerplate: content.config with
+  @sensinum/astro-strapi-loader, Strapi 5 data in Astro pages, StrapiBlocks, BlockRenderer,
+  Tailwind 4, shadcn. Covers the backend/ Strapi app, slug/CMS routes, Astro i18n, package
+  upgrades. Types in src/types/strapi/ with a barrel index.
 ---
 
-# Astro × Strapi starter (VirtusLab template)
+# Astro × Strapi — boilerplate sites vitrines
+
+Dérivé du template [astro-strapi-starter](https://github.com/VirtusLab-Open-Source/astro-strapi-starter)
+de Sensinum (MIT), adapté à la production de sites vitrines clients.
 
 ## Scope
 
-- **Stack:** Astro 7+, Strapi 5, `@sensinum/astro-strapi-loader`, `@sensinum/astro-strapi-blocks`, Tailwind CSS 4, shadcn-style UI in `src/components/ui/`.
-- **Goal:** Add or change CMS-driven content, query shapes, and UI while keeping one source of truth for Strapi REST objects and a clear split between **dynamic zone components** and **rich-text Blocks**.
+- **Stack :** Astro 7+, Strapi 5 (dans `backend/`), `@sensinum/astro-strapi-loader`,
+  `@sensinum/astro-strapi-blocks`, Tailwind CSS 4, shadcn-style UI dans `src/components/ui/`.
+- **Goal :** Add or change CMS-driven content, query shapes, and UI while keeping one source of
+  truth for Strapi REST objects and a clear split between **dynamic zone components** and
+  **rich-text Blocks**.
+
+## Monorepo : deux applications
+
+| | Dossier | Port | Dépendances |
+|---|---|---|---|
+| **CMS** | `backend/` | 1337 | `backend/package.json`, `backend/node_modules` **indépendants** |
+| **Front** | racine | 4321 | `package.json` racine |
+
+**Pas de npm workspaces** : Strapi exige React 18 (admin), le front utilise React 19. Le hoisting
+casserait l'un des deux. Toujours installer le backend via `npm --prefix backend install` (fait
+automatiquement par le `postinstall` racine).
+
+Les schémas Strapi dans `backend/src/api/*/content-types/` et `backend/src/components/` doivent
+rester **alignés** avec les types TypeScript de `src/types/strapi/`. Quand tu changes l'un, change
+l'autre dans le même commit.
 
 ## Read next
 
-- **Loader (queries, collections, locales):** stub with upstream links in [../astro-strapi-loader/SKILL.md](../astro-strapi-loader/SKILL.md) — canonical: [raw SKILL on GitHub](https://raw.githubusercontent.com/VirtusLab-Open-Source/astro-strapi-loader/main/.ai/astro-strapi-loader/SKILL.md)
-- **StrapiBlocks (rich text):** stub with upstream links in [../astro-strapi-blocks/SKILL.md](../astro-strapi-blocks/SKILL.md) — canonical: [raw SKILL on GitHub](https://raw.githubusercontent.com/VirtusLab-Open-Source/astro-strapi-blocks/main/.ai/astro-strapi-blocks/SKILL.md)
-- **Project overview:** [../AGENTS.md](../AGENTS.md)
-
-## Onboarding: upstream `SKILL` for loader and blocks (do this when you start)
-
-Stubs in [../astro-strapi-loader/SKILL.md](../astro-strapi-loader/SKILL.md) and [../astro-strapi-blocks/SKILL.md](../astro-strapi-blocks/SKILL.md) only **link** to GitHub. Tools that do **not** follow URLs will miss most loader/blocks behavior.
-
-**Recommended when you (or a teammate) begin work in this repo:**
-
-1. **Copy or download** the canonical upstream files into a place your tool reads — e.g. a local `SKILL` folder, `.cursor/skills/`, or a short-lived **`.ai/_upstream/`** (add to `.gitignore` if you do not want copies committed). Use the **raw** URLs from the stubs; **pin the branch or tag to the version in `package.json`** (e.g. replace `main` with the git tag that matches `@sensinum/astro-strapi-loader` / `astro-strapi-blocks`).
-2. **Or** use your editor’s **“fetch from URL / import skill”** for those raw links before deep work on `populate`, locales, or `StrapiBlocks` `theme` overrides.
-3. **Minimum:** at least **open the raw** loader and blocks `SKILL.md` once per upgrade cycle and skim for breaking changes.
-
-The full starter context lives in **this** file; loader and blocks are **not** vendored here on purpose, so a local or fetched copy is how you get parity with a model that only sees files.
-
+- **Loader** (queries, collections, locales) : [`../astro-strapi-loader/SKILL.md`](../astro-strapi-loader/SKILL.md) — copie vendorée de l'amont.
+- **StrapiBlocks** (rich text) : [`../astro-strapi-blocks/SKILL.md`](../astro-strapi-blocks/SKILL.md) — copie vendorée de l'amont.
+- **SEO :** [`../vitrine-seo/SKILL.md`](../vitrine-seo/SKILL.md) · **RGPD :** [`../rgpd-cookies/SKILL.md`](../rgpd-cookies/SKILL.md)
+- **Nouveau client :** [`../client-setup/SKILL.md`](../client-setup/SKILL.md)
+- **Vue d'ensemble :** [`../../../CLAUDE.md`](../../../CLAUDE.md)
 ## Configuration flow
 
 1. **Environment:** `STRAPI_URL`, `STRAPI_TOKEN` in `.env` (see `env.example`). Required for a live build against Strapi; the starter can fall back if the CMS is down (see `content.config.ts` and pages).
@@ -63,10 +73,22 @@ Use **StrapiBlocks** for the Strapi 5 **Blocks** rich-text field. Use **custom A
 
 ## New dynamic zone block (example workflow)
 
-1. Add the component in Strapi and note its `__component` string.
-2. Extend `Strapi*Component` types in `src/types/strapi/` (e.g. `components.ts`) and re-export from `index.ts` if you use TypeScript strongly.
-3. Add a new Astro file under `src/components/blocks/` and a branch in `BlockRenderer.astro`.
-4. Update **populate** for the dynamic zone so the new component’s media and relations are included (see loader skill, `on` / nested `populate`).
+> Utilise la commande `/new-block` : elle enchaîne les 5 étapes ci-dessous.
+
+1. **Schéma Strapi :** créer `backend/src/components/blocks/<nom>.json` (ou via l'admin, puis
+   committer le JSON généré — l'admin écrit dans ces mêmes fichiers). Noter le `__component`,
+   qui vaut `blocks.<nom>`.
+2. **Référencer** le composant dans la dynamic zone du content-type concerné
+   (`backend/src/api/<type>/content-types/<type>/schema.json`, clé `components`).
+3. **Types :** étendre `src/types/strapi/components.ts` — ajouter le littéral dans
+   `StrapiContentComponentTypes`, le type `StrapiContent<Nom>Component`, et l'ajouter à l'union
+   `StrapiContentComponents`. Le barrel `index.ts` réexporte déjà tout le module.
+4. **Composant :** nouveau fichier sous `src/components/blocks/` + une branche dans
+   `BlockRenderer.astro`.
+5. **Populate :** mettre à jour la requête dans `src/content.config.ts` pour que les médias et
+   relations du nouveau composant soient inclus (voir le skill loader, `on` / `populate` imbriqué).
+
+Puis `npm run typecheck` — l'union discriminée fait échouer la compilation si une branche manque.
 
 ## New collection or content type
 
@@ -103,26 +125,31 @@ Replace `pages` / `slug` with your collection name and the **field you agree is 
 ## Internationalization (i18n)
 
 - **Astro (canonical):** Configure routing, `[lang]` segments, and `i18n` in `astro.config` per the official guide: **[Internationalization (i18n) routing](https://docs.astro.build/en/guides/internationalization/)** (routing strategies, `getRelativeLocaleUrl`, `astro:i18n`, etc.). This repo does not ship a second, competing convention — add folders and config as the docs show.
-- **Strapi + loader:** Use **locales** in your Strapi REST `filters` / `locale` and in loader/collection options (see **upstream** loader `SKILL`). The **Astro** locale in the path (e.g. `en/`, `pl/`) and the **Strapi** `locale` parameter for fetches must **line up** in your page logic and `content.config` queries.
+- **Strapi + loader:** Use **locales** in your Strapi REST `filters` / `locale` and in loader/collection options (see the vendored loader skill). The **Astro** locale in the path (e.g. `en/`, `pl/`) and the **Strapi** `locale` parameter for fetches must **line up** in your page logic and `content.config` queries.
 - **Single source of truth:** URL structure = Astro i18n; per-locale data = Strapi queries.
 
-## Bumping `@sensinum/astro-strapi-loader` or `@sensinum/astro-strapi-blocks`
 
-1. After changing versions in `package.json` and `npm install` / `yarn`, **re-fetch** the matching upstream **raw** `SKILL.md` (and related `AGENTS` / reference) using a **git tag** or **commit** that matches the release you installed, not only `main`.
-2. If API or docs moved, **update the stub link targets** in [../astro-strapi-loader/SKILL.md](../astro-strapi-loader/SKILL.md) and [../astro-strapi-blocks/SKILL.md](../astro-strapi-blocks/SKILL.md) (and any Cursor rule stubs) so the next run points at the right revision.
-3. Run `npm run build` and fix any schema or import breaks.
+## Monter de version `@sensinum/astro-strapi-loader` / `astro-strapi-blocks`
 
-## Tests (optional, project policy)
-
-- The starter **does not** include a test runner. For **non-trivial** helpers (URL builders, locale mapping, block transformers), consider **Vitest** (Vite-native) and add it explicitly — the agent may **suggest** unit tests for those **high-value** code paths. E2E and coverage level remain **up to the team**.
+1. Changer la version dans `package.json`, puis `npm install`.
+2. **Rafraîchir les skills vendorés** : `npm run skills:refresh` (re-télécharge les `SKILL.md`
+   amont). Mettre à jour la note de version en tête de chaque fichier.
+3. `npm run build` et corriger les ruptures de schéma ou d'import.
 
 ## UI (Tailwind + shadcn)
 
-- Global design tokens and Tailwind: `src/styles/global.css`.
-- React shadcn primitives: `src/components/ui/`, `cn()` from `@/lib/utils`, aliases from `components.json`.
-- Pure Astro + Tailwind lives alongside React islands—keep one visual language (spacing, color tokens) across both.
+- Tokens de design globaux et Tailwind : `src/styles/global.css`.
+- Primitives React shadcn : `src/components/ui/`, `cn()` depuis `@/lib/utils`, alias dans
+  `components.json`.
+- Astro + Tailwind pur coexiste avec les îlots React — garder **un seul langage visuel**
+  (espacements, tokens de couleur) entre les deux.
+- **Par défaut, pas d'îlot React.** Un composant n'obtient une directive `client:*` que s'il a
+  besoin d'interactivité réelle. C'est la contrainte qui garantit le « zéro JS » et donc le SEO.
 
-## Verification
+## Vérification
 
-- `npm run build` runs `astro check` and a production build—use after changing schemas, `content.config.ts`, or block components.
-- After **loader/blocks** upgrades, re-run the same; add or run **Vitest** (if you adopt it) after changing test-covered helpers.
+- `npm run typecheck` (`astro check`) après toute modification de schéma, de
+  `content.config.ts` ou de composant de bloc.
+- `npm run build` lance `astro check` puis le build de production.
+- Le front doit builder **même si Strapi est éteint** : `src/content.config.ts` rattrape l'erreur
+  et les pages utilisent un contenu de secours. Ne pas supprimer ce filet.
