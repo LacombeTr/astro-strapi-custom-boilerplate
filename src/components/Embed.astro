@@ -1,0 +1,79 @@
+---
+/**
+ * Intégration d'un contenu tiers (YouTube, Google Maps) **sans cookie avant consentement**.
+ *
+ * Pourquoi ne pas écrire une <iframe> directement : une iframe YouTube ou Maps dépose des
+ * cookies dès le chargement de la page, avant tout consentement — c'est le manquement RGPD
+ * le plus courant sur les sites vitrines. Ce composant produit le markup que tarteaucitron
+ * reconnaît : il affiche un espace réservé, et ne charge l'iframe qu'après acceptation.
+ *
+ * Le ratio est réservé en CSS, donc l'apparition de l'iframe ne décale pas la page (CLS = 0).
+ *
+ * Penser à déclarer le service correspondant dans <CookieConsent services={[...]} />.
+ */
+type Props =
+  | {
+      type: 'youtube';
+      /** Identifiant de la vidéo (la partie après `v=`), pas l'URL complète. */
+      id: string;
+      title: string;
+      /** Ratio largeur/hauteur. 16/9 par défaut. */
+      ratio?: string;
+      class?: string;
+    }
+  | {
+      type: 'googlemaps';
+      /** Requête d'adresse, ex. "12 rue de la Paix, 75002 Paris". */
+      query: string;
+      title: string;
+      ratio?: string;
+      class?: string;
+    };
+
+const props = Astro.props;
+const ratio = props.ratio ?? '16 / 9';
+const extraClass = props.class ?? '';
+
+/*
+  `videoID` et `location` sont des attributs non standard, lus par tarteaucitron sur le
+  placeholder. On les passe par spread : les typages HTML d'Astro rejettent (à juste titre)
+  un attribut inconnu écrit littéralement.
+*/
+const placeholderAttrs: Record<string, string> =
+  props.type === 'youtube'
+    ? {
+        class: 'youtube_player h-full w-full',
+        videoID: props.id,
+        'data-title': props.title,
+        width: '100%',
+        height: '100%',
+        theme: 'light',
+        rel: '0',
+      }
+    : {
+        class: 'googlemaps h-full w-full',
+        'data-title': props.title,
+        location: props.query,
+        width: '100%',
+        height: '100%',
+        zoom: '15',
+      };
+---
+
+<div
+  class:list={['embed overflow-hidden rounded-xl border border-border bg-muted', extraClass]}
+  style={`aspect-ratio: ${ratio};`}
+>
+  {/* Un seul placeholder : son type et ses attributs sont résolus plus haut. */}
+  <div {...placeholderAttrs} />
+</div>
+
+<style>
+  /* Le placeholder de tarteaucitron doit occuper tout l'espace réservé, sinon le bloc
+     se réduit et la page se décale au moment du remplacement. */
+  .embed :global(iframe),
+  .embed :global(.tac_activate) {
+    width: 100% !important;
+    height: 100% !important;
+  }
+</style>

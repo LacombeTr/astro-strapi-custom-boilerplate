@@ -1,0 +1,164 @@
+---
+/**
+ * Bandeau de consentement aux cookies (tarteaucitron).
+ *
+ * Principe : **aucun** script tiers n'est chargé par cette page. Tarteaucitron est le seul
+ * point d'entrée ; il n'active chaque service qu'après consentement explicite, service par
+ * service. Les iframes Maps / YouTube passent par `Embed.astro`, qui produit le markup que
+ * tarteaucitron sait remplacer.
+ *
+ * Si aucun service n'est configuré (pas de PUBLIC_GA_ID, pas d'embed sur le site), ce
+ * composant ne rend **rien** : un site sans tiers ne pose aucun cookie et n'a donc pas
+ * besoin de bandeau. C'est la situation par défaut.
+ *
+ * Les assets viennent de `public/vendor/tarteaucitron/`, copiés depuis node_modules par le
+ * `postinstall` (`scripts/copy-tarteaucitron.mjs`) : tarteaucitron est du JS global et ne
+ * passe pas par le bundler Vite, il doit donc être servi comme fichier statique.
+ */
+import { site } from '../config/site';
+
+type Props = {
+  /**
+   * Services à proposer, en complément de ceux déclarés dans `site.thirdParty`.
+   *
+   * Le défaut est **vide** et non « tous » : déclarer un service qui n'est pas utilisé
+   * ferait apparaître un bandeau sur un site qui ne dépose rien, ce qui est trompeur et
+   * coûte inutilement en conversion.
+   */
+  services?: Array<'googlemaps' | 'youtube'>;
+};
+
+const { services = [] } = Astro.props;
+
+/** Union des services déclarés globalement et de ceux passés en props. */
+const declared = new Set<string>([
+  ...Object.entries(site.thirdParty)
+    .filter(([, enabled]) => enabled)
+    .map(([name]) => name),
+  ...services,
+]);
+
+const gaId = import.meta.env.PUBLIC_GA_ID ?? '';
+const jobs = [...(gaId ? ['gtag'] : []), ...declared];
+
+/** Rien à faire consentir → pas de bandeau. */
+const enabled = jobs.length > 0;
+const lang = site.locale.split('-')[0];
+---
+
+{
+  enabled && (
+    <>
+      <link rel="stylesheet" href="/vendor/tarteaucitron/css/tarteaucitron.min.css" />
+
+      {/*
+        Consent Mode v2 : l'état par défaut doit être « refusé » AVANT que gtag ne soit
+        chargé, sinon la première mesure part sans consentement. Tarteaucitron fera
+        l'`update` à l'acceptation.
+      */}
+      {gaId && (
+        <script is:inline>
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){ window.dataLayer.push(arguments); }
+            window.gtag = window.gtag || gtag;
+            gtag('consent', 'default', {
+              ad_storage: 'denied',
+              analytics_storage: 'denied',
+              ad_user_data: 'denied',
+              ad_personalization: 'denied',
+              wait_for_update: 500
+            });
+          `}
+        </script>
+      )}
+
+      <script is:inline define:vars={{ lang, gaId, jobs }}>
+        {`
+          // Doit être défini avant le chargement du script : tarteaucitron le lit à l'init.
+          window.tarteaucitronForceLanguage = lang;
+          window.tarteaucitronCustomText = {
+            "middleBarHead": "",
+            "alertBigPrivacy": "Ce site utilise des services tiers. Vous pouvez les accepter ou les refuser."
+          };
+        `}
+      </script>
+
+      <script is:inline src="/vendor/tarteaucitron/tarteaucitron.js" define:vars={{ gaId, jobs }}>
+      </script>
+
+      <script is:inline define:vars={{ gaId, jobs }}>
+        {`
+          tarteaucitron.init({
+            privacyUrl: '/politique-de-confidentialite',
+            bodyPosition: 'bottom',
+            hashtag: '#tarteaucitron',
+            cookieName: 'consent',
+
+            orientation: 'bottom',
+            groupServices: false,
+            showDetailsOnClick: true,
+            serviceDefaultState: 'wait',
+
+            // Icône flottante permettant de revenir sur son choix à tout moment :
+            // le retrait du consentement doit rester aussi simple que son octroi.
+            showAlertSmall: true,
+            cookieslist: false,
+            showIcon: true,
+            iconPosition: 'BottomRight',
+
+            // highPrivacy : aucun service n'est activé par un simple survol ou défilement.
+            // Le consentement doit être un acte explicite.
+            highPrivacy: true,
+            alwaysNeedConsent: false,
+
+            // « Tout refuser » doit être affiché au même niveau que « Tout accepter ».
+            // C'est l'exigence CNIL que la plupart des bandeaux ne respectent pas.
+            AcceptAllCta: true,
+            DenyAllCta: true,
+            handleBrowserDNTRequest: false,
+
+            removeCredit: true,
+            moreInfoLink: true,
+            useExternalCss: false,
+            useExternalJs: false,
+            readmoreLink: '/politique-cookies',
+
+            mandatory: true,
+            mandatoryCta: false
+          });
+
+          if (gaId) {
+            tarteaucitron.user.gtagUa = gaId;
+            tarteaucitron.user.gtagMore = function () {};
+          }
+
+          for (const job of jobs) {
+            (tarteaucitron.job = tarteaucitron.job || []).push(job);
+          }
+        `}
+      </script>
+
+      <style is:global>
+        {/*
+          Le bandeau est en position fixe, donc hors du flux : il ne provoque aucun CLS.
+          On aligne seulement ses couleurs sur les tokens du site pour qu'il ne jure pas.
+        */}
+        #tarteaucitronRoot {
+          --tac-radius: var(--radius, 0.5rem);
+        }
+        #tarteaucitronAlertBig,
+        #tarteaucitronAlertSmall {
+          font-family: var(--font-sans) !important;
+        }
+        #tarteaucitronAlertBig {
+          border-radius: var(--tac-radius) var(--tac-radius) 0 0 !important;
+        }
+        #tarteaucitronRoot button {
+          font-family: var(--font-sans) !important;
+          border-radius: calc(var(--tac-radius) * 0.75) !important;
+        }
+      </style>
+    </>
+  )
+}
