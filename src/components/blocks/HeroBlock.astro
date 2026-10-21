@@ -1,162 +1,95 @@
 ---
-import { Image } from "astro:assets";
-import { StrapiBlocks } from "@sensinum/astro-strapi-blocks";
-import AstroLogo from "../icons/AstroLogo.astro";
-import StrapiLogo from "../icons/StrapiLogo.astro";
-import TailwindLogo from "../icons/TailwindLogo.astro";
-import ShadcnLogo from "../icons/ShadcnLogo.astro";
-import TypeScriptLogo from "../icons/TypeScriptLogo.astro";
-import ReactLogo from "../icons/ReactLogo.astro";
-import AiNativeLogo from "../icons/AiNativeLogo.astro";
+/**
+ * Bandeau d'en-tête de page (composant Strapi `blocks.hero`).
+ *
+ * Contraintes SEO et performance assumées ici :
+ *  - un seul <h1> par page, et c'est celui-ci ;
+ *  - l'image de fond porte `width`/`height` et `fetchpriority="eager"` : c'est l'élément
+ *    LCP de la page, et des dimensions explicites évitent tout décalage de mise en page ;
+ *  - aucune dépendance JavaScript.
+ */
+import { StrapiBlocks } from '@sensinum/astro-strapi-blocks';
 
-import type { StrapiBlockField, StrapiContentHeroComponent } from "../../types/strapi";
-import { buildMediaUrl } from "../../utils";
+import type { StrapiBlockField, StrapiContentHeroComponent } from '../../types/strapi';
+import { buildMediaUrl } from '../../utils';
 
 type Props = {
-    data: StrapiContentHeroComponent;
+	data: StrapiContentHeroComponent;
+	/**
+	 * `false` sur les pages où le hero n'est pas le titre principal : le titre devient alors
+	 * un <p> stylé, pour ne pas créer un second <h1>.
+	 */
+	heading?: boolean;
 };
 
-const { data } = Astro.props;
+const { data, heading = true } = Astro.props;
+
+const background = data.background;
 ---
 
-<div class="mesh-gradient relative py-28 sm:py-24 lg:py-36 overflow-hidden">
-    {
-        data.background && (
-            <div class="absolute inset-0 z-0">
-                <img
-                    src={buildMediaUrl(data.background.url)}
-                    alt={data.background.alternativeText || ""}
-                    class="w-full h-full object-cover opacity-30 dark:opacity-20"
-                    loading="eager"
-                />
-                <div class="absolute inset-0 bg-background/60 dark:bg-background/70" />
-            </div>
-        )
-    }
+<section class="relative overflow-hidden py-20 sm:py-24 lg:py-32">
+	{
+		background && (
+			<div class="absolute inset-0 z-0">
+				<img
+					src={buildMediaUrl(background.url)}
+					alt={background.alternativeText || ''}
+					width={background.width}
+					height={background.height}
+					loading="eager"
+					fetchpriority="high"
+					decoding="async"
+					class="h-full w-full object-cover opacity-25 dark:opacity-20"
+				/>
+				{/* Voile de contraste : sans lui, le texte devient illisible sur certaines photos. */}
+				<div class="absolute inset-0 bg-background/60 dark:bg-background/70" />
+			</div>
+		)
+	}
 
-    <div class="relative z-10 max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-10">
-        <div class="text-center">
+	<div class="relative z-10 mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-8">
+		<div class="mx-auto max-w-3xl text-center" data-reveal>
+			{
+				heading ? (
+					<h1 class="text-4xl font-bold leading-tight tracking-tight text-balance sm:text-5xl lg:text-6xl">
+						{data.title}
+					</h1>
+				) : (
+					<p class="text-3xl font-bold leading-tight tracking-tight text-balance sm:text-4xl">
+						{data.title}
+					</p>
+				)
+			}
 
-            {/* ── Animated pills: tech stack ↔ stats ── */}
-            <div class="hero-pills mb-8 sm:mb-10">
-                <div class="hero-pills-a">
-                    <span class="glass-subtle rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground inline-flex items-center gap-1.5">
-                        <AstroLogo class="size-3 text-brand-500" />
-                        Astro 7
-                    </span>
-                    <span class="glass-subtle rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground inline-flex items-center gap-1.5">
-                        <StrapiLogo class="size-3" />
-                        Strapi CMS
-                    </span>
-                    <span class="glass-subtle rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground inline-flex items-center gap-1.5">
-                        <TailwindLogo class="size-3 text-brand-500" />
-                        Tailwind CSS 4
-                    </span>
-                    <span class="glass-subtle rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground inline-flex items-center gap-1.5">
-                        <ShadcnLogo class="size-3 text-violet-500" />
-                        shadcn/ui
-                    </span>
-                    <span class="glass-subtle rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground inline-flex items-center gap-1.5">
-                        <ReactLogo class="size-3 text-brand-500" />
-                        React 19
-                    </span>
-                    <span class="glass-subtle rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground inline-flex items-center gap-1.5">
-                        <TypeScriptLogo class="size-3" />
-                        TypeScript
-                    </span>
-                    <a
-                        href="https://github.com/VirtusLab-Open-Source/astro-strapi-starter/blob/main/AGENTS.md"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="glass-subtle rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground inline-flex items-center gap-1.5 ring-1 ring-primary/20 hover:text-foreground hover:ring-primary/40 transition-colors"
-                        title="AGENTS.md, .ai/ skills, and Cursor rules ship with the template"
-                    >
-                        <AiNativeLogo class="size-3 shrink-0 text-violet-500" />
-                        AI-native first
-                    </a>
-                </div>
+			{
+				data.subtitle && (
+					<p class="mt-6 text-lg font-light text-pretty text-muted-foreground sm:text-xl">
+						{data.subtitle}
+					</p>
+				)
+			}
 
-                <div class="hero-pills-b">
-                    <span class="glass-subtle rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground inline-flex items-center gap-1.5">
-                        <svg class="size-3 text-brand-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        Loader: 1k+ / mo
-                    </span>
-                    <span class="glass-subtle rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground inline-flex items-center gap-1.5">
-                        <svg class="size-3 text-violet-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                        Blocks: 500+ / mo
-                    </span>
-                    <span class="glass-subtle rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground inline-flex items-center gap-1.5">
-                        <svg class="size-3 text-amber-500" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                        100+ GitHub stars
-                    </span>
-                    <span class="glass-subtle rounded-full px-3 py-1.5 text-xs font-medium text-muted-foreground inline-flex items-center gap-1.5">
-                        <svg class="size-3 text-brand-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                        MIT License
-                    </span>
-                </div>
-            </div>
+			{
+				data.content && (
+					<StrapiBlocks
+						class="mt-6 text-base text-pretty text-muted-foreground"
+						data={data.content as StrapiBlockField}
+					/>
+				)
+			}
 
-            <Image
-                src="https://www.sensinum.com/img/open-source/strapi-astro-blocks/logo.png"
-                alt="Astro x Strapi Integrations by Sensinum"
-                width={140}
-                height={140}
-                class="mx-auto my-10 sm:mb-8 sm:mt-0 drop-shadow-lg"
-            />
-
-            <h1 class="text-4xl lg:text-6xl font-bold text-foreground leading-tight mb-8 sm:mb-6 tracking-tight">
-                {data.title}
-            </h1>
-            {
-                data.subtitle && (
-                    <p class="text-xl lg:text-2xl mb-10 sm:mb-8 max-w-4xl mx-auto text-muted-foreground font-light">
-                        {data.subtitle}
-                    </p>
-                )
-            }
-            {
-                data.content && (
-                    <StrapiBlocks
-                        class="text-lg mb-10 max-w-3xl mx-auto text-muted-foreground"
-                        data={data.content as StrapiBlockField}
-                        theme={{
-                            overwrite: {
-                                paragraph: {
-                                    strong: [
-                                        "font-mono",
-                                        "text-[0.88em]",
-                                        "font-medium",
-                                        "text-foreground",
-                                        "bg-muted/90",
-                                        "px-1.5",
-                                        "py-0.5",
-                                        "rounded-md",
-                                        "not-italic",
-                                    ],
-                                },
-                            },
-                        }}
-                    />
-                )
-            }
-            {
-                data.cta && (
-                    <div class="flex flex-wrap justify-center gap-4">
-                        <a
-                            href={data.cta.url}
-                            class="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold py-3 px-8 rounded-xl transition-all shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 text-lg"
-                        >
-                            {data.cta.label}
-                        </a>
-                        <a
-                            href="#component-showcase"
-                            class="inline-flex items-center gap-2 border border-border bg-background/80 backdrop-blur-sm text-foreground font-semibold py-3 px-8 rounded-xl transition-all hover:bg-background hover:-translate-y-0.5"
-                        >
-                            Component Showcase
-                        </a>
-                    </div>
-                )
-            }
-        </div>
-    </div>
-</div>
+			{
+				data.cta && (
+					<div class="mt-10 flex flex-wrap justify-center gap-4">
+						<a
+							href={data.cta.url}
+							class="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-3 text-lg font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition-all hover:-translate-y-0.5 hover:bg-primary/90"
+						>
+							{data.cta.label}
+						</a>
+					</div>
+				)
+			}
+		</div>
+	</div>
+</section>
