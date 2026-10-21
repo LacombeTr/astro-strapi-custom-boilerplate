@@ -1,0 +1,38 @@
+---
+/**
+ * Page d'accueil. Le contenu vient de Strapi (single type « Accueil ») : le hero et les
+ * sections sont pilotés depuis l'administration, sans toucher à ce fichier.
+ *
+ * Le repli n'est pas décoratif — il permet de travailler le front avec le CMS éteint et
+ * évite qu'une indisponibilité de Strapi fasse échouer un déploiement.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BlockRenderer from '../components/blocks/BlockRenderer.astro';
+import { getSingleType } from '../lib/strapi';
+import { site } from '../config/site';
+import type { StrapiHomepage } from '../types/strapi';
+
+const homepage = await getSingleType<StrapiHomepage>('homepage');
+
+const title = homepage?.title ?? site.name;
+const sections = homepage?.sections ?? [];
+---
+
+<BaseLayout title={title} seo={homepage?.seo ?? null}>
+  {
+    homepage?.hero ? (
+      <BlockRenderer data={homepage.hero} />
+    ) : (
+      <section class="mx-auto max-w-3xl px-4 py-24 text-center sm:px-6 lg:px-8">
+        <h1 class="text-4xl font-bold tracking-tight sm:text-5xl">{site.name}</h1>
+        <p class="mt-4 text-lg text-muted-foreground">{site.description}</p>
+        <p class="mt-8 text-sm text-muted-foreground">
+          Aucun contenu trouvé dans le CMS. Lancez <code class="rounded bg-muted px-1.5 py-0.5">npm run dev</code>
+          puis renseignez la page d'accueil dans l'administration Strapi.
+        </p>
+      </section>
+    )
+  }
+
+  {sections.map((block) => <BlockRenderer data={block} />)}
+</BaseLayout>

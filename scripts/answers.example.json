@@ -1,0 +1,40 @@
+{
+  "_comment": "Modèle pour le mode non interactif : node scripts/init-project.mjs --answers mes-reponses.json. Toute clé omise ou vide reprend la valeur par défaut de la version interactive.",
+
+  "siteName": "Boulangerie Durand",
+  "projectSlug": "boulangerie-durand",
+  "url": "https://boulangerie-durand.fr",
+  "description": "Boulangerie artisanale à Nantes depuis 1998. Pains au levain, viennoiseries et pâtisseries maison.",
+  "titleSuffix": "| Boulangerie Durand",
+  "locale": "fr-FR",
+
+  "email": "contact@boulangerie-durand.fr",
+  "phone": "02 40 12 34 56",
+  "street": "12 rue des Lilas",
+  "postalCode": "44000",
+  "city": "Nantes",
+  "hasPhysicalPlace": true,
+
+  "facebook": "https://facebook.com/boulangeriedurand",
+  "instagram": "https://instagram.com/boulangeriedurand",
+  "linkedin": "",
+
+  "companyName": "Boulangerie Durand SARL",
+  "legalForm": "SARL",
+  "siret": "12345678900012",
+  "publisher": "Marie Durand",
+  "hostName": "Vercel Inc.",
+  "hostAddress": "340 S Lemon Ave #4133, Walnut, CA 91789, États-Unis",
+
+  "brandColor": "#C2410C",
+  "accentColor": "#1E3A8A",
+  "font": "manrope",
+
+  "strapiUrl": "http://localhost:1337",
+  "gaId": "",
+  "usesMaps": true,
+  "usesYouTube": false,
+
+  "removeDemo": true,
+  "resetGit": true
+}
