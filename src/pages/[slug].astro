@@ -1,0 +1,139 @@
+---
+/**
+ * Route unique pour toutes les pages à un seul segment d'URL.
+ *
+ * Elle sert deux sources : les pages du CMS (collection « pages » de Strapi) et les pages
+ * légales en Markdown. Une seule route évite le conflit qu'auraient produit deux fichiers
+ * dynamiques concurrents, et permet de garder des URLs propres (`/mentions-legales` plutôt
+ * que `/legal/mentions-legales`).
+ *
+ * Les pages légales sont prioritaires : un contenu rédigé en CMS ne doit pas pouvoir
+ * remplacer accidentellement un texte à portée juridique.
+ */
+import { getCollection, render } from 'astro:content';
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BlockRenderer from '../components/blocks/BlockRenderer.astro';
+import { getEntries } from '../lib/strapi';
+import type { StrapiPage } from '../types/strapi';
+
+export async function getStaticPaths() {
+  const legalEntries = await getCollection('legal');
+  const legalPaths = legalEntries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { kind: 'legal' as const, legalId: entry.id },
+  }));
+
+  const taken = new Set(legalPaths.map((p) => p.params.slug));
+
+  const cmsPages = await getEntries<StrapiPage>('pages');
+  const cmsPaths = cmsPages
+    .filter((page) => page.slug && !taken.has(page.slug))
+    .map((page) => ({
+      params: { slug: page.slug },
+      props: { kind: 'cms' as const, page },
+    }));
+
+  return [...legalPaths, ...cmsPaths];
+}
+
+type Props =
+  | { kind: 'legal'; legalId: string }
+  | { kind: 'cms'; page: StrapiPage };
+
+const props = Astro.props as Props;
+
+/*
+  `render()` exige l'entrée complète de la collection : on la recharge ici plutôt que de la
+  passer en props, car les props de getStaticPaths sont sérialisées et perdraient les
+  fonctions de rendu.
+*/
+let legalTitle = '';
+let legalDescription = '';
+let LegalContent: Awaited<ReturnType<typeof render>>['Content'] | null = null;
+
+if (props.kind === 'legal') {
+  const entries = await getCollection('legal');
+  const entry = entries.find((candidate) => candidate.id === props.legalId)!;
+  legalTitle = entry.data.title;
+  legalDescription = entry.data.description;
+  LegalContent = (await render(entry)).Content;
+}
+
+const page = props.kind === 'cms' ? props.page : null;
+const title = props.kind === 'legal' ? legalTitle : page!.title;
+const description = props.kind === 'legal' ? legalDescription : undefined;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  seo={page?.seo ?? null}
+  breadcrumbs={[
+    { name: 'Accueil', url: '/' },
+    { name: title, url: `/${Astro.params.slug}` },
+  ]}
+>
+  {
+    props.kind === 'legal' && LegalContent ? (
+      <article class="mx-auto max-w-3xl px-4 py-16 sm:px-6 lg:px-8">
+        <h1 class="mb-8 text-3xl font-bold tracking-tight sm:text-4xl">{title}</h1>
+        {/*
+          `prose` vient du plugin typographique de Tailwind s'il est installé ; sans lui, les
+          styles de base ci-dessous assurent une lecture correcte.
+        */}
+        <div class="legal-prose">
+          <LegalContent />
+        </div>
+      </article>
+    ) : (
+      <>
+        <h1 class="sr-only">{title}</h1>
+        {page?.content?.map((block) => <BlockRenderer data={block} />)}
+      </>
+    )
+  }
+</BaseLayout>
+
+<style>
+  /* Styles de lecture pour le Markdown légal : volontairement minimaux et autonomes,
+     pour ne pas dépendre d'un plugin supplémentaire. */
+  .legal-prose :global(h2) {
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+  .legal-prose :global(p),
+  .legal-prose :global(ul),
+  .legal-prose :global(table) {
+    margin-bottom: 1rem;
+    line-height: 1.7;
+  }
+  .legal-prose :global(ul) {
+    padding-left: 1.25rem;
+    list-style: disc;
+  }
+  .legal-prose :global(a) {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .legal-prose :global(blockquote) {
+    margin-bottom: 1.5rem;
+    border-left: 3px solid var(--color-border, currentColor);
+    padding: 0.75rem 1rem;
+    background: color-mix(in oklab, currentColor 5%, transparent);
+    border-radius: 0.5rem;
+  }
+  .legal-prose :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+  .legal-prose :global(th),
+  .legal-prose :global(td) {
+    border: 1px solid var(--color-border, currentColor);
+    padding: 0.5rem 0.75rem;
+    text-align: left;
+  }
+</style>

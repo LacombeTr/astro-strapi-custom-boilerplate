@@ -1,0 +1,129 @@
+---
+/**
+ * Pied de page : mentions, liens légaux et réseaux sociaux, pilotés depuis Strapi.
+ *
+ * Les liens légaux sont ajoutés en repli même si le CMS n'en fournit pas : sur un site
+ * commercial français, l'accès aux mentions légales depuis toutes les pages est une
+ * obligation, pas une option de contenu.
+ */
+import { Icon } from 'astro-icon/components';
+
+import { site } from '../config/site';
+import type { StrapiGlobal, StrapiSocialPlatform } from '../types/strapi';
+
+type Props = { global?: StrapiGlobal | null };
+
+const { global = null } = Astro.props;
+
+const siteName = global?.siteName ?? site.name;
+
+/** Correspondance plateforme → icône Iconify (jeu simple-icons). */
+const SOCIAL_ICONS: Record<StrapiSocialPlatform, string> = {
+  facebook: 'simple-icons:facebook',
+  instagram: 'simple-icons:instagram',
+  linkedin: 'simple-icons:linkedin',
+  x: 'simple-icons:x',
+  youtube: 'simple-icons:youtube',
+  tiktok: 'simple-icons:tiktok',
+};
+
+const SOCIAL_LABELS: Record<StrapiSocialPlatform, string> = {
+  facebook: 'Facebook',
+  instagram: 'Instagram',
+  linkedin: 'LinkedIn',
+  x: 'X',
+  youtube: 'YouTube',
+  tiktok: 'TikTok',
+};
+
+const LEGAL_FALLBACK = [
+  { label: 'Mentions légales', url: '/mentions-legales' },
+  { label: 'Politique de confidentialité', url: '/politique-de-confidentialite' },
+  { label: 'Politique cookies', url: '/politique-cookies' },
+];
+
+const cmsLinks = global?.footer?.links ?? [];
+/** On complète avec les pages légales manquantes plutôt que de les dupliquer. */
+const links = [
+  ...cmsLinks,
+  ...LEGAL_FALLBACK.filter((fb) => !cmsLinks.some((l) => l.url === fb.url)),
+];
+
+const socials = global?.footer?.socials ?? [];
+const copyright =
+  global?.footer?.copyright ?? `© ${new Date().getFullYear()} ${siteName}`;
+---
+
+<footer class="border-t border-border bg-muted/30">
+  <div
+    class="mx-auto flex max-w-screen-xl flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8 md:flex-row md:items-center md:justify-between"
+  >
+    <div class="space-y-2">
+      <p class="text-sm text-muted-foreground">{copyright}</p>
+
+      <nav aria-label="Liens légaux">
+        <ul class="flex flex-wrap gap-x-4 gap-y-1">
+          {
+            links.map((item) => (
+              <li>
+                <a
+                  href={item.url}
+                  class="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      {/*
+        Rouvre le panneau de consentement. Obligatoire dès qu'un bandeau existe : le retrait
+        du consentement doit être aussi accessible que son octroi. Le lien est inoffensif si
+        aucun service tiers n'est configuré (le panneau n'existe simplement pas).
+      */}
+      <button
+        type="button"
+        id="cookie-preferences"
+        class="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+        hidden
+      >
+        Gérer les cookies
+      </button>
+    </div>
+
+    {
+      socials.length > 0 && (
+        <ul class="flex items-center gap-2">
+          {socials.map((social) => (
+            <li>
+              <a
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer me"
+                aria-label={SOCIAL_LABELS[social.platform]}
+                class="inline-flex size-9 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                <Icon name={SOCIAL_ICONS[social.platform]} class="size-4" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</footer>
+
+<script>
+  // Le bouton n'est révélé que si tarteaucitron est réellement chargé : sur un site sans
+  // service tiers, proposer « gérer les cookies » alors qu'il n'y en a aucun est trompeur.
+  const button = document.getElementById('cookie-preferences');
+  if (button && 'tarteaucitron' in window) {
+    button.hidden = false;
+    button.addEventListener('click', () => {
+      (window as unknown as { tarteaucitron: { userInterface: { openPanel: () => void } } })
+        .tarteaucitron.userInterface.openPanel();
+    });
+  }
+</script>

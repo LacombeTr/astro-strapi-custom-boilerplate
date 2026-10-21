@@ -1,0 +1,23 @@
+---
+/**
+ * Injecte un graphe JSON-LD. Utiliser les constructeurs de `src/lib/schema.ts` plutôt que
+ * de composer l'objet sur place.
+ *
+ * `set:html` avec JSON.stringify est la forme correcte : Astro n'échappe alors pas les
+ * guillemets, et le contenu reste du JSON valide.
+ */
+import type { Thing, WithContext } from 'schema-dts';
+
+type Props = {
+  schema: WithContext<Thing> | WithContext<Thing>[];
+};
+
+const { schema } = Astro.props;
+const payload = Array.isArray(schema) ? schema : [schema];
+---
+
+{
+  payload.map((node) => (
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(node)} />
+  ))
+}

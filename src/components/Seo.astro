@@ -1,0 +1,76 @@
+---
+/**
+ * Toutes les métadonnées de référencement d'une page, en un seul endroit.
+ *
+ * Accepte directement le composant SEO de Strapi (`StrapiComponentSEO`) via `strapi`, ce qui
+ * évite de remapper les champs dans chaque page. Les props explicites l'emportent sur Strapi,
+ * et `src/config/site.ts` fournit les valeurs de repli.
+ */
+import { site, absoluteUrl } from '../config/site';
+import { buildMediaUrl } from '../utils/media';
+import type { StrapiComponentSEO } from '../types/strapi';
+
+type Props = {
+  title?: string;
+  description?: string;
+  /** Composant SEO renvoyé par Strapi ; utilisé pour les champs non fournis en props. */
+  strapi?: StrapiComponentSEO | null;
+  /** Chemin ou URL de l'image de partage. Par défaut `site.ogImage`. */
+  image?: string;
+  /** URL canonique. Par défaut l'URL de la page courante. */
+  canonical?: string;
+  /** `true` sur les pages qui ne doivent pas être indexées (remerciement, aperçu…). */
+  noindex?: boolean;
+  /** "website" pour les pages classiques, "article" pour un contenu daté. */
+  type?: 'website' | 'article';
+};
+
+const {
+  title,
+  description,
+  strapi = null,
+  image,
+  canonical,
+  noindex = false,
+  type = 'website',
+} = Astro.props;
+
+const rawTitle = title ?? strapi?.metaTitle ?? site.name;
+/** On n'ajoute le suffixe que s'il n'est pas déjà présent, pour éviter « Nom — Nom ». */
+const pageTitle =
+  site.titleSuffix && !rawTitle.includes(site.titleSuffix)
+    ? `${rawTitle} ${site.titleSuffix}`
+    : rawTitle;
+
+const pageDescription = description ?? strapi?.metaDescription ?? site.description;
+const keywords = strapi?.keywords;
+
+/** Une image Strapi arrive en URL relative au CMS : buildMediaUrl la rend absolue. */
+const rawImage = image ?? (strapi?.ogImage?.url ? buildMediaUrl(strapi.ogImage.url) : site.ogImage);
+const imageUrl = rawImage.startsWith('http') ? rawImage : absoluteUrl(rawImage);
+
+/** `Astro.url` porte le domaine de dev ; on force le domaine canonique de production. */
+const canonicalUrl = canonical
+  ? absoluteUrl(canonical)
+  : absoluteUrl(Astro.url.pathname);
+---
+
+<title>{pageTitle}</title>
+<meta name="description" content={pageDescription} />
+{keywords && <meta name="keywords" content={keywords} />}
+<link rel="canonical" href={canonicalUrl} />
+<meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow'} />
+<meta name="generator" content={Astro.generator} />
+
+<meta property="og:type" content={type} />
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={pageDescription} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:site_name" content={site.name} />
+<meta property="og:locale" content={site.locale.replace('-', '_')} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={pageTitle} />
+<meta name="twitter:description" content={pageDescription} />
+<meta name="twitter:image" content={imageUrl} />

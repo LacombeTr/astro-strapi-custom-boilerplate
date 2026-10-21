@@ -1,0 +1,98 @@
+---
+/**
+ * Enveloppe commune à toutes les pages : <head> complet, en-tête, pied de page et bandeau
+ * cookies. Toute page du site passe par ici — c'est ce qui garantit qu'aucune page ne part
+ * en production sans balise canonique, sans description, ou avec un titre dupliqué.
+ */
+import '../styles/global.css';
+
+import Seo from '../components/Seo.astro';
+import JsonLd from '../components/JsonLd.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import CookieConsent from '../components/CookieConsent.astro';
+
+import { lang } from '../config/site';
+import { organizationSchema, webSiteSchema, breadcrumbSchema, type Crumb } from '../lib/schema';
+import { getSingleType } from '../lib/strapi';
+import type { StrapiComponentSEO, StrapiGlobal } from '../types/strapi';
+
+type Props = {
+  title?: string;
+  description?: string;
+  /** Composant SEO Strapi de la page, s'il y en a un. */
+  seo?: StrapiComponentSEO | null;
+  image?: string;
+  noindex?: boolean;
+  type?: 'website' | 'article';
+  /** Fil d'Ariane, hors accueil. Inclure la page courante en dernier. */
+  breadcrumbs?: Crumb[];
+};
+
+const { title, description, seo = null, image, noindex, type, breadcrumbs } = Astro.props;
+
+/** Réglages partagés (nom, logo, menu, pied de page). `null` si le CMS est injoignable. */
+const global = await getSingleType<StrapiGlobal>('global');
+
+/*
+  L'identité (Organization/LocalBusiness) et le site sont déclarés une seule fois, ici, pour
+  éviter les doublons de @id que les validateurs signalent. Le fil d'Ariane s'ajoute par page.
+*/
+const schemas = [
+  organizationSchema(),
+  webSiteSchema(),
+  ...(breadcrumbs?.length ? [breadcrumbSchema(breadcrumbs)] : []),
+];
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <Seo
+      title={title}
+      description={description}
+      strapi={seo}
+      image={image}
+      noindex={noindex}
+      type={type}
+    />
+    <JsonLd schema={schemas} />
+
+    {/*
+      Applique le thème avant le premier rendu. `is:inline` est indispensable : un script
+      bundlé serait différé et la page afficherait brièvement le mauvais thème.
+      localStorage peut lever (navigation privée, cookies bloqués), d'où le try/catch.
+    */}
+    <script is:inline>
+      try {
+        const stored = localStorage.getItem('theme');
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (stored === 'dark' || (!stored && systemDark)) {
+          document.documentElement.classList.add('dark');
+        }
+      } catch {}
+    </script>
+
+    <CookieConsent />
+  </head>
+
+  <body class="min-h-screen flex flex-col bg-background text-foreground">
+    <Header global={global} />
+
+    <main class="flex-1">
+      <slot />
+    </main>
+
+    <Footer global={global} />
+
+    <script>
+      import { initAnimations } from '../scripts/animations';
+      initAnimations();
+    </script>
+  </body>
+</html>
