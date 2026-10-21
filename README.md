@@ -1,303 +1,305 @@
-<div align="center" style="max-width: 10rem; margin: 0 auto">
-  <img style="width: 150px; height: auto;" src="https://www.sensinum.com/img/open-source/strapi-astro-blocks/logo.png" alt="Logo - Strapi Astro Loader" />
-</div>
-<div align="center" style="margin-bottom: 2rem">
-  <h1>Astro x Strapi Starter</h1>
-  <p style="max-width: 36rem; margin: 0.5rem auto 0.75rem; line-height: 1.5"><strong>AI-native first</strong> — agent context (<code>AGENTS.md</code>), <a href="./.ai/">Agent Skills</a> under <code>.ai/</code>, and <a href="./.cursor/rules/">Cursor rules</a> are part of the product, not a README afterthought. You extend the stack with AI, not against it.</p>
-  <a href="https://astrostrapi.io/"><strong>🔗 Live Demo</strong></a>
-</div>
+# Boilerplate sites vitrines — Astro × Strapi
 
-All-in-one starter combining Astro, Strapi CMS, TailwindCSS, and shadcn/ui with support for **[Strapi Astro Loader](https://github.com/VirtusLab-Open-Source/astro-strapi-loader)** and **[Strapi Astro Blocks Field](https://github.com/VirtusLab-Open-Source/astro-strapi-blocks)**. Details: [AI-native support](#-ai-native-support).
+Socle pour produire des sites vitrines clients : **rapides**, **bien référencés** et
+**modifiables par le client** sans intervention sur le code. Pensé comme une alternative
+légère à WordPress — pas de plugins à maintenir, pas de base de données interrogée à chaque
+visite, pas de surface d'attaque côté public.
 
----
+| | |
+|---|---|
+| **Front** | [Astro 7](https://astro.build) — statique, zéro JavaScript par défaut |
+| **CMS** | [Strapi 5](https://strapi.io) — dans `backend/`, administration en français |
+| **Styles** | [Tailwind CSS 4](https://tailwindcss.com) + primitives [shadcn/ui](https://ui.shadcn.com) |
+| **Langage** | TypeScript strict, de bout en bout |
+| **Icônes** | [astro-icon](https://www.astroicon.dev) + Iconify — SVG inlinés, aucun JS |
+| **Animations** | [motion](https://motion.dev) en API vanilla |
+| **SEO** | `<Seo>` centralisé, JSON-LD typé, sitemap et robots.txt générés |
+| **RGPD** | [tarteaucitron](https://tarteaucitron.io) + pages légales pré-remplies |
 
-## ✨ Features
-
-- ⚡ **Astro 7** - Latest version with ultra-fast static sites
-- 📝 **Strapi CMS** - Headless CMS for content management
-- 🧱 **Strapi Astro Blocks Field** - Modular & flexible content block system
-- 🔄 **Strapi Astro Loader** - Automatic content loading from Strapi
-- 🤖 **AI-native support** - `AGENTS.md`, Agent Skills under `.ai/`, and Cursor rules tailored to Astro x Strapi for Loader &amp; Blocks
-- 🎨 **TailwindCSS 4** - Modern utility-first CSS styling
-- 🧩 **shadcn/ui** - Pre-configured React component library (optional)
-- 🌗 **Dark / Light mode** - Toggle with system preference detection
-- 🔀 **Tailwind / shadcn toggle** - Live component showcase comparing both approaches
-- 🔤 **Inter font** - Self-hosted variable font via `@fontsource`
-- 📱 **Responsive Design** - Optimized for all devices
-- 🌐 **TypeScript** - Full type support
-
-![image](/public/preview.png)
+> Dérivé de [astro-strapi-starter](https://github.com/VirtusLab-Open-Source/astro-strapi-starter)
+> de [Sensinum](https://sensinum.com) (licence MIT).
 
 ---
 
-## 📖 Table of Contents
+## Sommaire
 
-- [✨ Features](#-features)
-- [🚀 Quick Start](#-quick-start)
-- [🗂️ Project Structure](#️-project-structure)
-- [🤖 AI-native support](#-ai-native-support)
-- [🏆 Lighthouse Score](#-lighthouse-score)
-- [🌗 Dark / Light Mode](#-dark--light-mode)
-- [🧩 UI Components: shadcn/ui vs Pure Tailwind](#-ui-components-shadcnui-vs-pure-tailwind)
-- [📦 Strapi Astro Packages](#-strapi-astro-packages)
-- [🔨 Available Commands](#-available-commands)
-- [🌍 Deploy](#-deploy)
-- [📚 Useful Links](#-useful-links)
-- [🔧 Development](#-development)
-- [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
+- [Prérequis](#prérequis)
+- [Démarrer un nouveau site client](#démarrer-un-nouveau-site-client)
+- [Les deux applications](#les-deux-applications)
+- [Commandes](#commandes)
+- [Variables d'environnement](#variables-denvironnement)
+- [Ajouter du contenu](#ajouter-du-contenu)
+- [SEO](#seo)
+- [Animations et icônes](#animations-et-icônes)
+- [Cookies et RGPD](#cookies-et-rgpd)
+- [Déploiement](#déploiement)
+- [Travailler avec Claude Code](#travailler-avec-claude-code)
+- [Crédits et licence](#crédits-et-licence)
 
 ---
 
-## 🚀 Quick Start
+## Prérequis
 
-### 1. Use a starter template
+- **Node.js ≥ 22.12** (`node -v`)
+- **npm** — le dépôt est configuré pour npm ; `package-lock.json` est versionné
+
+## Démarrer un nouveau site client
 
 ```bash
-# NPM
-npm create astro@latest -- --template VirtusLab-Open-Source/astro-strapi-starter
+git clone <ce-dépôt> site-client
+cd site-client
 
-# Yarn
-yarn create astro --template VirtusLab-Open-Source/astro-strapi-starter
+npm install      # installe aussi backend/ et copie les assets tarteaucitron
+npm run setup    # pose les questions sur le client et paramètre le dépôt
+npm run dev      # lance Strapi (1337) et Astro (4321)
 ```
 
-### 2. Environment Variables Setup
+Puis, au premier lancement :
 
-Create a `.env` file in the root directory:
+1. Ouvrir **http://localhost:1337/admin** et créer le compte administrateur.
+2. Ouvrir **http://localhost:4321** — le site affiche déjà le contenu d'exemple.
 
-```env
-# Strapi Configuration
-STRAPI_URL=http://localhost:1337
-STRAPI_TOKEN=your_strapi_api_token_here
-```
+Au premier démarrage, le CMS s'amorce tout seul : contenu de départ, **token API en lecture
+seule généré** et écrit dans le `.env` racine. C'est l'étape la plus fastidieuse à refaire
+pour chaque client, elle est automatisée (`backend/src/seed.ts`).
 
-### 3. Run the Project
+### Ce que fait `npm run setup`
+
+Il interroge sur le client (nom, domaine, coordonnées, couleurs, police, mentions légales,
+Google Analytics) puis :
+
+- renseigne `src/config/site.ts`, `package.json` et `.env` ;
+- **régénère les secrets de `backend/.env`** — des secrets partagés entre plusieurs sites
+  clients signifieraient qu'une fuite sur l'un compromet tous les autres ;
+- génère les échelles de couleurs `--color-brand-*` et `--color-violet-*` en OKLCH à partir
+  de deux couleurs ;
+- remplit les pages légales de `src/content/legal/` ;
+- supprime la vitrine de démonstration et installe une page d'accueil pilotée par le CMS ;
+- réinitialise l'historique git sur un commit unique.
+
+Options utiles :
 
 ```bash
-npm run dev
+npm run setup -- --dry-run                      # prévisualise sans rien écrire
+npm run setup -- --force                        # rejoue l'initialisation
+node scripts/init-project.mjs --answers r.json  # non interactif (modèle : scripts/answers.example.json)
 ```
 
-Open [http://localhost:4321](http://localhost:4321) in your browser.
+### Une fois initialisé
 
-## 🗂️ Project Structure
+- Remplacer `public/favicon.svg` et `public/og-image.png` (1200×630).
+- Installer la police si elle n'est pas Inter : `npm install @fontsource-variable/<nom>`.
+- **Relire `src/content/legal/`** et faire valider les textes.
+- Renseigner « Réglages du site » dans Strapi (nom, logo, navigation, pied de page).
 
-```
-/
-├── src/
-│   ├── components/
-│   │   ├── blocks/                # Strapi block components (Astro + Tailwind)
-│   │   │   ├── BlockRenderer.astro
-│   │   │   ├── TextBlock.astro
-│   │   │   ├── QuoteBlock.astro
-│   │   │   ├── MediaBlock.astro
-│   │   │   ├── CTABlock.astro
-│   │   │   └── HeroBlock.astro
-│   │   ├── tailwind/              # Pure Tailwind Astro components
-│   │   │   ├── Button.astro
-│   │   │   ├── Card.astro
-│   │   │   ├── CardHeader.astro
-│   │   │   ├── CardTitle.astro
-│   │   │   ├── CardDescription.astro
-│   │   │   ├── CardContent.astro
-│   │   │   └── Badge.astro
-│   │   ├── ui/                    # shadcn/ui React components
-│   │   │   ├── button.tsx
-│   │   │   ├── card.tsx
-│   │   │   ├── badge.tsx
-│   │   │   └── separator.tsx
-│   │   ├── showcase/              # Side-by-side component demos
-│   │   │   ├── TailwindShowcase.astro
-│   │   │   └── ShadcnShowcase.tsx
-│   │   ├── Toolbar.astro          # Sticky header with logo + toggles
-│   │   ├── ThemeToggle.astro      # Dark / Light mode switch
-│   │   └── UIToggle.astro         # Tailwind / shadcn switch
-│   ├── lib/
-│   │   └── utils.ts               # cn() utility for class merging
-│   ├── pages/
-│   │   └── index.astro            # Homepage
-│   ├── types/
-│   │   └── strapi/                # Strapi TS types (`index.ts` re-exports modules)
-│   ├── content.config.ts          # Strapi Loader configuration
-│   ├── styles/
-│   │   └── global.css             # Theme, fonts, toggle visibility rules
-│   └── utils/
-│       └── media.ts               # Strapi Media utils
-├── components.json                # shadcn/ui configuration
-├── package.json
-└── astro.config.mjs
-```
+## Les deux applications
 
-## 🤖 AI-native support
+| | Dossier | Port | Rôle |
+|---|---|---|---|
+| **CMS** | `backend/` | 1337 | Administration du contenu, API REST |
+| **Front** | racine | 4321 | Site public, généré statiquement |
 
-This starter ships first-class **agent context** for any AI coding tool (Cursor, Claude Code, Copilot, and other SKILL.md–compatible clients):
+Pour n'en lancer qu'une : `npm run dev:cms` ou `npm run dev:web`.
 
-- **[`AGENTS.md`](./AGENTS.md)** (root) points to the full guide: **[`.ai/AGENTS.md`](./.ai/AGENTS.md)**
-- **Agent Skills** (YAML + markdown) under **`.ai/`**:
-  - [`.ai/astro-strapi-starter/SKILL.md`](./.ai/astro-strapi-starter/SKILL.md) — end-to-end workflow for this template (the only long-form skill kept here)
-  - [`.ai/astro-strapi-loader/SKILL.md`](./.ai/astro-strapi-loader/SKILL.md) and [`.ai/astro-strapi-blocks/SKILL.md`](./.ai/astro-strapi-blocks/SKILL.md) — **short stubs** with links to the canonical **SKILL** (and related) files in [`astro-strapi-loader`](https://github.com/VirtusLab-Open-Source/astro-strapi-loader/tree/main/.ai) and [`astro-strapi-blocks`](https://github.com/VirtusLab-Open-Source/astro-strapi-blocks/tree/main/.ai) (no duplicate prose in this repo)
-- **Cursor project rules** in [`.cursor/rules/`](./.cursor/rules/) — [`astro-strapi-loader`](./.cursor/rules/astro-strapi-loader.mdc) and [`astro-strapi-blocks`](./.cursor/rules/astro-strapi-blocks.mdc) are **thin pointers** to the [loader](https://github.com/VirtusLab-Open-Source/astro-strapi-loader/blob/main/.cursor/rules/astro-strapi-loader.mdc) and [blocks](https://github.com/VirtusLab-Open-Source/astro-strapi-blocks/blob/main/.cursor/rules/astro-strapi-blocks.mdc) upstream rules; [`astro-strapi-starter`](./.cursor/rules/astro-strapi-starter.mdc) and [`tailwind-shadcn`](./.cursor/rules/tailwind-shadcn.mdc) are defined in this repo
+> **Pas de npm workspaces, volontairement.** Strapi exige React 18 pour son administration,
+> le front utilise React 19. Le hoisting d'un workspace casserait l'un des deux. `backend/`
+> garde donc ses propres `package.json` et `node_modules`, installés par le `postinstall`.
 
-The authoritative manuals for the packages live in those upstream `.ai` trees. Pin a **tag or commit** in the raw-GitHub URLs to match your `package.json` version when you need strict reproducibility.
+Le front **build même si Strapi est éteint** : un contenu de repli prend le relais. C'est
+voulu — on peut travailler l'interface sans le CMS, et une indisponibilité du CMS ne fait pas
+échouer un déploiement.
 
-To use a skill in a tool that only loads from `.cursor/skills/`, copy or symlink [`.ai/astro-strapi-starter/`](./.ai/astro-strapi-starter) there. For loader and blocks, copy from upstream raw URLs (see the stub files) or fetch them in your tool if it supports **URL-based** skills.
+## Commandes
 
-## 🏆 Lighthouse Score
+| Commande | Effet |
+|---|---|
+| `npm install` | Installe le front **et** le backend, copie les assets tarteaucitron |
+| `npm run setup` | Paramètre le dépôt pour un nouveau client |
+| `npm run dev` | Strapi + Astro en parallèle |
+| `npm run dev:cms` / `dev:web` | Une seule des deux applications |
+| `npm run typecheck` | `astro check` — à lancer après toute modification |
+| `npm run build` | Build du CMS puis du front |
+| `npm run build:web` | Front seulement (contrôle de types inclus) → `dist/` |
+| `npm run preview` | Sert le `dist/` construit |
+| `npm run cms:start` | Démarre Strapi en mode production |
+| `npm run cms:seed` | Rejoue l'amorçage du CMS |
+| `npm run skills:refresh` | Re-télécharge la documentation amont vendorée |
 
-Nearly perfect scores out of the box — no extra optimization needed.
+## Variables d'environnement
 
-| Desktop | Mobile |
-|---------|--------|
-| ![Lighthouse Desktop](public/preview-lighthouse-desktop.png) | ![Lighthouse Mobile](public/preview-lighthouse-mobile.png) |
+Front — `.env` à la racine (modèle : `env.example`) :
 
-## 🌗 Dark / Light Mode
+| Variable | Obligatoire | Où l'obtenir |
+|---|---|---|
+| `STRAPI_URL` | oui | `http://localhost:1337` en local ; l'URL du CMS en production |
+| `STRAPI_TOKEN` | oui | **Généré automatiquement** au premier `npm run dev`. En production : admin Strapi → Settings → API Tokens |
+| `PUBLIC_GA_ID` | non | Google Analytics, format `G-XXXXXXXXXX`. **Vide = aucun script de mesure et aucun bandeau cookies** |
 
-The starter includes a theme toggle in the header. It:
+CMS — `backend/.env`, créé à la génération et dont les secrets sont régénérés par
+`npm run setup`. En production, fournir au minimum `APP_KEYS`, `ADMIN_JWT_SECRET`,
+`JWT_SECRET`, `API_TOKEN_SALT`, `TRANSFER_TOKEN_SALT`, `ENCRYPTION_KEY` et la configuration
+de base de données.
 
-- Detects system preference on first visit
-- Saves choice to `localStorage`
-- Renders an inline script in `<head>` to prevent flash of wrong theme
-- Toggles the `dark` class on `<html>` — all semantic tokens adapt automatically
+Ni `.env` ni `backend/.env` ne doivent être committés.
 
-All components use semantic color tokens (`text-foreground`, `bg-card`, `border-border`, etc.) so dark mode works everywhere out of the box.
+> Le token doit autoriser **la lecture du contenu et celle du Content-Type Builder** : le
+> loader introspecte les schémas Strapi au build pour générer ses validateurs. Un token limité
+> au contenu échoue. L'amorçage local crée un token sur mesure avec exactement ces droits.
 
-## 🧩 UI Components: shadcn/ui vs Pure Tailwind
+## Ajouter du contenu
 
-This starter ships with **two parallel component sets** — switch between them live using the toggle in the header.
+### Une page que le client gère lui-même
 
-### Pure Tailwind (Astro)
+Rien à coder. Dans l'administration Strapi, créer une entrée **Page** avec son `slug` et
+composer son contenu avec les blocs disponibles. `src/pages/[slug].astro` la rend
+automatiquement.
 
-Components in `src/components/tailwind/` are `.astro` files styled with Tailwind utility classes. Zero JavaScript, server-rendered.
+### Un nouveau type de bloc
+
+Un bloc traverse quatre couches, qui doivent rester cohérentes :
+
+1. **Schéma** — `backend/src/components/blocks/<nom>.json`, puis référencer `blocks.<nom>`
+   dans les dynamic zones des content-types concernés.
+2. **Types** — `src/types/strapi/components.ts` : ajouter le littéral à
+   `StrapiContentComponentTypes`, créer le type du composant, l'ajouter à l'union
+   `StrapiContentComponents`.
+3. **Composant** — `src/components/blocks/<Nom>Block.astro` + une branche dans
+   `BlockRenderer.astro`.
+4. **Populate** — `src/content.config.ts`, objet `blocksPopulate`. **Sans cette étape, l'API
+   renvoie le bloc sans ses images.**
+
+`npm run typecheck` échoue si une branche manque dans `BlockRenderer` : l'union est
+discriminée sur `__component`.
+
+Avec Claude Code, `/new-block` enchaîne les quatre couches.
+
+### Un nouveau content-type
+
+Ajouter le schéma dans `backend/src/api/`, une requête et une entrée dans `generateCollections`
+(`src/content.config.ts`), les types correspondants, puis les pages qui les consomment via
+`src/lib/strapi.ts`.
+
+## SEO
+
+Les garanties sont centralisées pour ne pas dépendre de la vigilance page par page :
+
+- **`src/config/site.ts`** — seule source de vérité : nom, URL, coordonnées, type d'entité
+  pour les données structurées. Alimente aussi `astro.config.mjs`, le sitemap et le robots.
+- **`src/layouts/BaseLayout.astro`** — toute page y passe. Jamais de `<head>` dans une page :
+  c'est ce qui garantit titre, description, canonique, Open Graph et JSON-LD partout.
+- **`src/components/Seo.astro`** — priorité : props explicites → composant SEO de Strapi →
+  `site.ts`. Le client peut donc surcharger le SEO depuis l'administration.
+- **`src/lib/schema.ts`** — JSON-LD typé avec `schema-dts`. Les erreurs de données
+  structurées sont silencieuses côté Google ; ici elles deviennent des erreurs de compilation.
+- **`src/pages/robots.txt.ts`** — généré depuis `site.url`. Hors production, il **interdit
+  l'indexation** : un environnement de recette indexé crée du contenu dupliqué.
+
+Règles à respecter : un seul `<h1>` par page, titre ≤ 60 caractères, description ≤ 160,
+`alt` sur chaque image, `width`/`height` explicites, `loading="lazy"` sauf pour l'image du
+hero (élément LCP).
+
+Avec Claude Code, `/seo-check` audite le `dist/` construit.
+
+## Animations et icônes
 
 ```astro
 ---
-import Button from "@/components/tailwind/Button.astro";
-import Card from "@/components/tailwind/Card.astro";
-import CardHeader from "@/components/tailwind/CardHeader.astro";
-import CardTitle from "@/components/tailwind/CardTitle.astro";
-import CardContent from "@/components/tailwind/CardContent.astro";
+import { Icon } from 'astro-icon/components';
 ---
+<Icon name="lucide:arrow-right" class="size-4" />
 
-<Card>
-  <CardHeader>
-    <CardTitle>My Card</CardTitle>
-  </CardHeader>
-  <CardContent>
-    <Button variant="outline">Click me</Button>
-  </CardContent>
-</Card>
+<section data-reveal>Apparaît à l'entrée dans le viewport</section>
+<ul data-stagger>…les enfants apparaissent en cascade…</ul>
 ```
 
-### shadcn/ui (React)
+Les icônes sont inlinées en SVG au build : **aucun JavaScript**. Les animations utilisent
+l'API vanilla de `motion` (`src/scripts/animations.ts`) et non React — un îlot hydraté
+coûterait plusieurs dizaines de kilo-octets sur une page sans interactivité.
+`prefers-reduced-motion` est respecté.
 
-Components in `src/components/ui/` are React components built on [Radix UI](https://www.radix-ui.com/) primitives. Accessible, composable, interactive.
+`motion/react` reste disponible pour les composants réellement interactifs.
 
-```astro
----
-import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
----
+## Cookies et RGPD
 
-<Card>
-  <CardHeader>
-    <CardTitle>My Card</CardTitle>
-  </CardHeader>
-  <CardContent>
-    <Button client:load variant="outline">Click me</Button>
-  </CardContent>
-</Card>
-```
+**Par défaut, ce site ne dépose aucun cookie** et **n'affiche donc aucun bandeau**. Le
+`localStorage` du thème relève des préférences utilisateur et est exempté de consentement.
+C'est le réglage le plus sûr, et celui qu'il faut garder quand c'est possible.
 
-### Adding More shadcn/ui Components
+Un bandeau n'apparaît que si un service tiers est activé :
 
-```bash
-npx shadcn@latest add dialog dropdown-menu tabs
-```
+| Besoin | À utiliser |
+|---|---|
+| Google Analytics 4 | Renseigner `PUBLIC_GA_ID` — rien d'autre à coder |
+| Vidéo YouTube | `<Embed type="youtube" id="…" title="…" />` |
+| Carte Google Maps | `<Embed type="googlemaps" query="…" title="…" />` |
 
-### Removing shadcn/ui
+**Règle absolue : aucun script tiers en dehors de tarteaucitron.** Pas d'`<iframe>` YouTube
+ou Maps écrite directement — elle déposerait ses cookies avant tout consentement.
+`src/components/Embed.astro` produit un espace réservé que tarteaucitron remplace après
+acceptation, sans décalage de mise en page.
 
-If you prefer pure Tailwind only:
+La configuration (`src/components/CookieConsent.astro`) refuse tout service avant action
+explicite, affiche « Tout refuser » au même niveau que « Tout accepter », et permet de revenir
+sur son choix via le pied de page. Avec GA4, l'état Consent Mode v2 est posé en `denied` avant
+tout chargement.
 
-1. Delete `src/components/ui/`, `src/components/showcase/ShadcnShowcase.tsx`, and `src/lib/utils.ts`
-2. Delete `components.json`
-3. Remove `@astrojs/react` from `astro.config.mjs` (if not using React elsewhere)
-4. Uninstall: `npm uninstall @astrojs/react radix-ui class-variance-authority clsx tailwind-merge lucide-react tw-animate-css shadcn`
+Les pages légales sont dans `src/content/legal/` — en Markdown versionné plutôt que dans le
+CMS, parce que ces textes engagent juridiquement et doivent suivre les revues de code.
+`npm run setup` les pré-remplit ; les champs manquants restent visiblement en
+`[À COMPLÉTER]`.
 
-## 📦 Strapi Astro Packages
+> **Ce sont des modèles, pas un conseil juridique.** Faites-les relire avant toute mise en
+> ligne, et assurez-vous qu'ils décrivent vos traitements réels.
 
-- [`@sensinum/astro-strapi-loader`](https://github.com/VirtusLab-Open-Source/astro-strapi-loader) — Automatic content loading from Strapi
-- [`@sensinum/astro-strapi-blocks`](https://github.com/VirtusLab-Open-Source/astro-strapi-blocks) — Modular & flexible block rendering
+## Déploiement
 
-## 🔨 Available Commands
+Les deux applications se déploient **séparément**.
 
-| Command                | Action                                     |
-| :--------------------- | :----------------------------------------- |
-| `npm install`          | Installs dependencies                      |
-| `npm run dev`          | Starts dev server at `localhost:4321`      |
-| `npm run build`        | Build your production site to `./dist/`    |
-| `npm run preview`      | Preview your build locally                 |
-| `npm run astro ...`    | Run CLI commands like `astro add`, `astro check` |
+### Front (Astro)
 
-## 🌍 Deploy
+Vercel, Netlify, Cloudflare Pages ou tout hébergeur statique.
 
-### Vercel
-1. Connect your repository to Vercel
-2. Add environment variables in project settings
-3. Deploy!
+- Commande de build : `npm run build:web`
+- Dossier publié : `dist/`
+- Variables : `STRAPI_URL`, `STRAPI_TOKEN`, `PUBLIC_GA_ID`
 
-### Netlify
-1. Connect your repository to Netlify
-2. Set build command: `npm run build`
-3. Set publish directory: `dist`
-4. Add environment variables
+Le contenu est figé au build : **toute modification dans le CMS exige un nouveau build**.
+Brancher un webhook Strapi sur le déploiement pour l'automatiser.
 
-## 📚 Useful Links
+### CMS (Strapi)
 
-- [Astro Documentation](https://docs.astro.build)
-- [TailwindCSS Documentation](https://tailwindcss.com/docs)
-- [shadcn/ui Documentation](https://ui.shadcn.com)
-- [Strapi Documentation](https://docs.strapi.io)
-- [Sensinum Astro Strapi Loader](https://github.com/VirtusLab-Open-Source/astro-strapi-loader)
-- [Sensinum Astro Strapi Blocks Field](https://github.com/VirtusLab-Open-Source/astro-strapi-blocks)
+Strapi Cloud, Railway, Render ou un VPS.
 
-## 🔧 Development
+- Build : `npm --prefix backend run build`
+- Démarrage : `npm run cms:start`
 
-1. Clone the repository
-2. Install dependencies:
+> **SQLite est réservé au développement.** En production, utiliser **PostgreSQL** et un
+> stockage de médias persistant (S3, Cloudinary). Sur un hébergeur à système de fichiers
+> éphémère, une base SQLite et les fichiers uploadés disparaissent à chaque redéploiement.
 
-```bash
-npm install
-```
+Créer un token API **en lecture seule** depuis l'administration, avec `find`/`findOne` sur les
+content-types **et** l'accès en lecture au Content-Type Builder.
 
-3. Run development mode:
+## Travailler avec Claude Code
 
-```bash
-npm run dev
-```
+- **[`CLAUDE.md`](./CLAUDE.md)** — contexte chargé automatiquement : stack, commandes, règles.
+- **[`AGENTS.md`](./AGENTS.md)** — même contenu condensé, pour les autres outils.
+- **[`.claude/skills/`](./.claude/skills/)** — un `SKILL.md` par domaine :
+  `astro-strapi-starter`, `astro-strapi-loader` et `astro-strapi-blocks` (copies **vendorées**
+  de la documentation amont, donc disponibles hors ligne), `tailwind-shadcn`, `vitrine-seo`,
+  `rgpd-cookies`, `client-setup`.
+- **Commandes** : `/new-block`, `/new-page`, `/seo-check`.
+- `.claude/settings.json` pré-autorise les commandes de lecture et de vérification, et
+  interdit la lecture des fichiers `.env`.
 
-4. Check types:
+`npm run skills:refresh` resynchronise la documentation amont après une montée de version de
+`@sensinum/astro-strapi-loader` ou `astro-strapi-blocks`.
 
-```bash
-npx astro check
-```
+## Crédits et licence
 
-## 🤝 Contributing
+Construit sur [astro-strapi-starter](https://github.com/VirtusLab-Open-Source/astro-strapi-starter)
+de [Sensinum](https://sensinum.com) (groupe VirtusLab), ainsi que
+[`@sensinum/astro-strapi-loader`](https://github.com/VirtusLab-Open-Source/astro-strapi-loader)
+et [`@sensinum/astro-strapi-blocks`](https://github.com/VirtusLab-Open-Source/astro-strapi-blocks).
 
-We welcome contributions to this project! Here's how you can help:
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-Please make sure to:
-* Follow the existing code style
-* Write tests for new features
-* Update documentation as needed
-* Keep your PR focused and concise
-
-## 📄 License
-
-Copyright © [Sensinum](https://sensinum.com)
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+Licence MIT — voir [LICENSE.md](./LICENSE.md).
