@@ -111,5 +111,11 @@ temp/
 .yarn/unplugged
 .yarn/build-state.yml
 .yarn/install-state.gz
-.pnp.* 
-yarn.lock
+.pnp.*
+
+# Assets tiers copiés par le postinstall (scripts/copy-tarteaucitron.mjs).
+# Artefact d'installation, régénéré à chaque `npm install`.
+public/vendor/
+
+# Marqueur écrit par `npm run setup` pour éviter une seconde initialisation.
+.setup-done

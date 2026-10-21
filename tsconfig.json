@@ -3,11 +3,20 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     }
   },
   "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"]
+  "exclude": [
+    "dist",
+    // `backend/` est une application Strapi autonome, avec son propre tsconfig et sa propre
+    // version de React. L'inclure ici ferait remonter ses erreurs dans `astro check`.
+    "backend",
+    // Assets tiers copiés par le postinstall : du JS non typé qu'on ne contrôle pas.
+    "public/vendor",
+    // Modèles copiés dans src/ par `npm run setup` : leurs imports relatifs ne résolvent
+    // qu'une fois le fichier en place. Ils sont vérifiés par le `astro check` que le
+    // script d'initialisation lance après la copie.
+    "scripts/templates"
+  ]
 }
